@@ -7,9 +7,9 @@ public class HashTable {
 
     private static final int DEFAULT_CAPACITY = 1000;
 
-    private static final double LOAD_FACTOR = 0.5;
+    private static final double DEFAULT_LOAD_FACTOR = 0.5;
 
-    private static final int GAP = 1;
+    private static final int GAP = 307;
 
     private final double loadFactor;
 
@@ -26,7 +26,7 @@ public class HashTable {
     }
 
     HashTable(int capacity) {
-        this(capacity, LOAD_FACTOR);
+        this(capacity, DEFAULT_LOAD_FACTOR);
     }
 
     HashTable(double loadFactor) {
@@ -38,6 +38,9 @@ public class HashTable {
         this.array = new Entry[capacity];
         this.deleted = new boolean[capacity];
 
+        if (loadFactor > 1 || loadFactor <= 0) {
+            loadFactor = DEFAULT_LOAD_FACTOR;
+        }
         this.loadFactor = loadFactor;
         this.threshold = (int) (this.loadFactor * capacity);
     }
@@ -46,7 +49,10 @@ public class HashTable {
 
         int hash = (key.hashCode() % array.length + array.length) % array.length;
 
+        //int i = 1;
+
         while (deleted[hash] || array[hash] != null && !key.equals(array[hash].key)) {
+            //hash = (hash + i*(i++)) % array.length;
             hash = (hash + GAP) % array.length;
         }
 
@@ -57,7 +63,10 @@ public class HashTable {
 
         int hash = (key.hashCode() % array.length + array.length) % array.length;
 
+        //int i = 1;
+
         while (array[hash] != null) {
+            //hash = (hash + i*(i++)) % array.length;
             hash = (hash + GAP) % array.length;
         }
 
@@ -81,7 +90,9 @@ public class HashTable {
             array[index] = newElement;
             size++;
 
-            this.resize();
+            if (size >= threshold) {
+                this.resize();
+            }
 
             return null;
         }
@@ -124,22 +135,21 @@ public class HashTable {
     }
 
     void resize() {
-        if (size > threshold) {
 
-            var oldArray = this.array;
+        var oldArray = array;
 
-            array = new Entry[oldArray.length * 2];
-            deleted = new boolean[array.length];
-            threshold = (int) (loadFactor * oldArray.length * 2);
-            size = 0;
+        array = new Entry[oldArray.length * 2];
+        deleted = new boolean[array.length];
+        threshold = (int) (loadFactor * oldArray.length * 2);
+        size = 0;
 
-            for (Entry element : oldArray) {
-                if (element != null) {
-                    this.put(element.key, element.value);
-                }
+        for (Entry element : oldArray) {
+            if (element != null) {
+                this.put(element.key, element.value);
             }
-
         }
+
+
     }
 
     @Override
