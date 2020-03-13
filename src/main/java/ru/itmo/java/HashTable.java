@@ -35,17 +35,22 @@ public class HashTable {
 
     HashTable(int capacity, double loadFactor) {
 
+        if (capacity <= 0){
+            capacity = DEFAULT_CAPACITY;
+        }
+
         this.array = new Entry[capacity];
         this.deleted = new boolean[capacity];
 
         if (loadFactor > 1 || loadFactor <= 0) {
             loadFactor = DEFAULT_LOAD_FACTOR;
         }
+
         this.loadFactor = loadFactor;
         this.threshold = (int) (this.loadFactor * capacity);
     }
 
-    int indexInTable(Object key) {
+    private int indexInTable(Object key) {
 
         int hash = (key.hashCode() % array.length + array.length) % array.length;
 
@@ -59,7 +64,7 @@ public class HashTable {
         return hash;
     }
 
-    int indexToPutToTable(Object key) {
+    private int indexToPutToTable(Object key) {
 
         int hash = (key.hashCode() % array.length + array.length) % array.length;
 
