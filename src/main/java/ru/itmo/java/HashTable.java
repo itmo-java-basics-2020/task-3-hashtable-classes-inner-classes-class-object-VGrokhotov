@@ -59,11 +59,15 @@ public class HashTable {
 
         int hash = hash(key);
 
+        int firstHash = hash;
         //int i = 1;
 
         while (deleted[hash] || array[hash] != null && !key.equals(array[hash].key)) {
             //hash = (hash + i*(i++)) % array.length;
             hash = (hash + GAP) % array.length;
+            if (hash == firstHash){
+                return indexToPut(key);
+            }
         }
 
         return hash;
